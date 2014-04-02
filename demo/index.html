@@ -25,87 +25,10 @@
             margin-top: -1000000px;
         }
     </style>
+    <script src="jsrender.js"></script>
+    <script src="main.js"></script>
     <script>
-        var templates = {
-            button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
-            ul: '<ul class="multiselect-container dropdown-menu"></ul>',
-            filter: '<div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input class="form-control multiselect-search" type="text"></div>',
-            li: '<li><a href="javascript:void(0);"><label>test</label></a></li>',
-            divider: '<div class="divider"></div>',
-            liGroup: '<li><label class="multiselect-group"></label></li>'
-        };
-        var
-            createOptionValue = function (e) {
-                return templates.li;
-            },
-            createOptions = function () {
-                log.s('Create plugin');
-                var lis = [];
-                $select.children().each(function (index, element) {
 
-                    // Support optgroups and options without a group simultaneously.
-                    var tag = $(element).prop('tagName').toLowerCase();
-
-                    if (tag === 'optgroup') {
-                        //this.createOptgroup(element);
-                    } else if (tag === 'option') {
-
-
-                        lis.push(createOptionValue(element));
-
-
-                    }
-
-
-                });
-                $ul.append(lis);
-                log.e('Create plugin');
-            }
-        ;
-
-        var log = {
-            i: [],
-            s: function (title) {
-                console.time(title);
-                log.i[title] = new Date().getTime();
-            },
-            e: function (title) {
-                var end = new Date().getTime();
-                console.timeEnd(title);
-                var time = end - log.i[title];
-                $("#log").append(title + ': ' + time + "ms\n");
-                delete log.i[title];
-            }
-        };
-        $(document).ready(function () {
-            //Populate with some data
-          
-            log.s('Create source');
-            var output = [];
-            for (var i = 0; i < 10000; i++) {
-                output.push('<option value="' + i + '"> Value #' + i + '</option>');
-            };
-            $('#multiselect').html(output.join(''));
-            log.e('Create source');
-
-            //Build dropdownoptions
-            $select = $("#multiselect");
-            $ul = $("#multiselect-ul");
-            $cont = $("#multiselect-container");
-
-            setTimeout(function () { createOptions(); }, 1);
-
-            $("#showDropdown").click(function () {
-                console.time('Toggle visibility');
-                //  $cont.toggleClass("ddHide");
-                console.log($cont.css('margin-top'));
-                $cont.css('margin-top', $cont.css('margin-top') == '0px' ? '-1000px' : '0px');
-                console.timeEnd('Toggle visibility');
-                //  $ul[0].style.display = 'block'
-                return false;
-            });
-
-        });
     </script>
 
 </head>
@@ -143,6 +66,13 @@
         <p>
             My goal is to make a plug-in so capable it would be a irresponsible to use it to its full extent
         </p>
+        <p>
+            Any time over 300ms is noticeable to user, so we try to either do everything async if its longer (creating the plugin)
+        </p>
+        <p>
+            if you have a large datasource, dont bother rendering it, the hit is unneeded to plop data in and then pull it right back out
+        </p>
+      
         <div class="row">
             <div class="col-md-4">
                 <textarea class="form-control" id="log" rows="18"></textarea>
@@ -159,7 +89,7 @@
                                 <div class="dropdown-menu " style="display: inline-block; position: Static; float: none; top: 0; ">
                                     <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input class="form-control multiselect-search" type="text" placeholder="Search"></div>
                                     <ul><li><input type="checkbox" /> Select All</li></ul>
-                                    <ul id="multiselect-ul" class="dropdown-menu "  role="menu" aria-labelledby="dLabel" style=" max-height: 500px; overflow-y: auto; overflow-x: hidden; display: inline-block; position: Static; float: none; top: 0; "></ul>
+                                    <ul id="multiselect-ul" class="dropdown-menu " role="menu" aria-labelledby="dLabel" style=" max-height: 500px; overflow-y: auto; overflow-x: hidden; display: inline-block; position: Static; float: none; top: 0; "></ul>
 
                                 </div>
                             </div>
@@ -169,64 +99,128 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                        <p>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                     
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading">Max items before creation significantly greater than 600ms (using ajax as source)</div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                       
+                                        <th>Ie8 (emulated by ie10, win7)</th>
+                                        <th>Ie10</th>
+                                        <th>Firefox</th>
+                                        <th>Chrome</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                  
+                                    <td>
+                                        2,500
+                                    </td>
+                                    <td>
+                                        2,500
+                                    </td>
+                                    <td>
+                                        28,000
+                                    </td>
+                                    <td>
+                                        44,000
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
 
-                            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-                        </p>
-                        <table class="table">
-                            <tr>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                                <td>
-                                    hey
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading">Browser benchmarks with 10,000 items</div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Ie8 (emulated by ie10, win7)</th>
+                                        <th>Ie10</th>
+                                        <th>Firefox</th>
+                                        <th>Chrome</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                    <td>
+                                        Create data (array)
+                                    </td>
+                                    <td>
+                                        2
+                                    </td>
+                                    <td>
+                                        5
+                                    </td>
+                                    <td>
+                                        1
+                                    </td>
+                                    <td>
+                                        3
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Render data (select)
+                                    </td>
+                                    <td>
+                                        29492
+                                    </td>
+                                    <td>
+                                        4764
+                                    </td>
+                                    <td>
+                                        192
+                                    </td>
+                                    <td>
+                                        447
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Create plugin
+                                    </td>
+                                    <td>
+                                        2532
+                                    </td>
+                                    <td>
+                                        10627
+                                    </td>
+                                    <td>
+                                        558
+                                    </td>
+                                    <td>
+                                        576
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Toggle visibility
+                                    </td>
+                                    <td>
+                                        4 (odd i know)
+                                    </td>
+                                    <td>
+                                        360
+                                    </td>
+                                    <td>
+                                        40
+                                    </td>
+                                    <td>
+                                        0
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
