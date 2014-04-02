@@ -1,10 +1,8 @@
-﻿-user creates element to bind to
+﻿-user creates element to bind to, create mapper to put into mem object
 -can define HxW or popout
 -dismiss on click away
 -support radio or checkbox or divider or optgroups
--support filter, filterBehavior, enableCaseInsensitiveFiltering
--support selectall (with text parameter)
--function for text of button? since we arent created button it would have to be on selected event
+-support filter, filterBehavior, enableCaseInsensitiveFiltering, startswith vs cotnains
 -selected class, but could disable after x items?
 -events
 	- initialized

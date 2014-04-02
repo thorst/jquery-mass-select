@@ -24,6 +24,9 @@
         .ddHide {
             margin-top: -1000000px;
         }
+        .donotshow {
+            display: none;
+        }
     </style>
     <script src="jsrender.js"></script>
     <script src="main.js"></script>
@@ -67,46 +70,46 @@
             My goal is to make a plug-in so capable it would be a irresponsible to use it to its full extent
         </p>
         <p>
-            Any time over 300ms is noticeable to user, so we try to either do everything async if its longer (creating the plugin)
+            Any time over 300ms is noticeable to user, so we try
+            <ul>
+                <li>do it async if its longer</li>
+                <li>keep rewriting until its under</li>
+            </ul>
         </p>
         <p>
             if you have a large datasource, dont bother rendering it, the hit is unneeded to plop data in and then pull it right back out
         </p>
-      
+
         <div class="row">
             <div class="col-md-4">
                 <textarea class="form-control" id="log" rows="18"></textarea>
             </div>
             <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <select id="multiselect" multiple="multiple"></select>
-                    </div>
-                    <div class="col-md-6">
+               
                         <div>
                             <a id="showDropdown" href="#" class="btn btn-default">Dropdown trigger</a>
+                            <a href="#" id="getVals" class="btn btn-default">getVals</a>
                             <div id="multiselect-container" class="" style="overflow: hidden; position: absolute; margin-top: -1000px; z-index: 9999;display:inline-block;">
                                 <div class="dropdown-menu " style="display: inline-block; position: Static; float: none; top: 0; ">
-                                    <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input class="form-control multiselect-search" type="text" placeholder="Search"></div>
-                                    <ul><li><input type="checkbox" /> Select All</li></ul>
+                                    <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input id="searchText" class="form-control multiselect-search" type="text" placeholder="Search"></div>
+                                    <ul><li><input type="checkbox" id="selectAll" /> Select All</li></ul>
                                     <ul id="multiselect-ul" class="dropdown-menu " role="menu" aria-labelledby="dLabel" style=" max-height: 500px; overflow-y: auto; overflow-x: hidden; display: inline-block; position: Static; float: none; top: 0; "></ul>
 
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                     
                 </div>
                 <div class="row">
                     <div class="col-md-12">
 
-                     
+
                         <div class="panel panel-default">
                             <!-- Default panel contents -->
                             <div class="panel-heading">Max items before creation significantly greater than 600ms (using ajax as source)</div>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                       
+
                                         <th>Ie8 (emulated by ie10, win7)</th>
                                         <th>Ie10</th>
                                         <th>Firefox</th>
@@ -115,7 +118,7 @@
                                     </tr>
                                 </thead>
                                 <tr>
-                                  
+
                                     <td>
                                         2,500
                                     </td>
@@ -194,10 +197,10 @@
                                         10627
                                     </td>
                                     <td>
-                                        558
+                                        219
                                     </td>
                                     <td>
-                                        576
+                                        139
                                     </td>
                                     <td></td>
                                 </tr>
@@ -216,6 +219,42 @@
                                     </td>
                                     <td>
                                         0
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Toggle select all
+                                    </td>
+                                    <td>
+                                  
+                                    </td>
+                                    <td>
+                              
+                                    </td>
+                                    <td>
+                                        119 first time, 67 after that
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        get values
+                                    </td>
+                                    <td>
+                                  
+                                    </td>
+                                    <td>
+                              
+                                    </td>
+                                    <td>
+                                      10
+                                    </td>
+                                    <td>
+                                        
                                     </td>
                                     <td></td>
                                 </tr>
