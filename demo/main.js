@@ -14,7 +14,7 @@ var
         // return '<li><a href="#"><input type="checkbox" value="'+e.value+'" /> '+e.name+'</a></li>';
         return templates.li
             .replace("CONTENTS", "<input type='checkbox' value='" + e.value + "' /> " + e.name)
-            .replace("META", " value='" + e.value + "' text='" + e.name + "'")
+            .replace("META", " value='" + e.value + "' text='" + e.name + "' class='v'")
         ;
     },
     createOptions = function () {
@@ -62,7 +62,7 @@ $(document).ready(function () {
     var output = [];
     for (var i = 0; i < 10000; i++) {
         //output.push('<option value="' + i + '"> Value #' + i + '</option>');
-        output.push({name:'Value #' + i,value:i, type:"option"});
+        output.push({name:'Value #' + i,value:i, type:"option", isoption: true, ischecked:false});
     };
     log.e('Create data');
     //log.s('Render data');
@@ -112,9 +112,9 @@ $(document).ready(function () {
         delay(function () {
             var direc = "";
             if (that.value.length > $SerchTerm.length) {
-                direc = ":not(.donotshow)";
+                direc = ".v";
             } else if (that.value.length < $SerchTerm.length) {
-                direc = ".donotshow";
+                direc = ":not(.v)";
             } else {
                 //determine the direction
                 //for (var i = 0; i < that.value.length; i++) {
@@ -127,7 +127,7 @@ $(document).ready(function () {
             //validate there is acutally data searching
             if (typeof $SerchTerm === "undefined" || $SerchTerm == "") {
                 log.s('Search');
-                $ul.find("li").removeClass("donotshow");
+                $ul.find("li").addClass("v");
                 log.e('Search');
                 return;
             }
@@ -155,6 +155,9 @@ $(document).ready(function () {
             ////346 for 10,000 d1
             ////328 d2
             ////359 each
+            //116 in chrome
+            //best so far
+            //reverse it sub 100
             var tohide = [], toshow=[];
             log.s('Search');
             $ul.find("li" + direc).each(function (i, e) {
@@ -167,23 +170,80 @@ $(document).ready(function () {
                     return;
                 }
 
-                if ($this.hasClass("donotshow")) {
+                if (!$this.hasClass("v")) {
                     toshow.push($this);
                 }
             });
             //var d = $($.map(tohide, function(el){return $.makeArray(el)}));
             var d = $($.map(tohide, function(el){return el.get();}));
-            d.addClass("donotshow");
+            d.removeClass("v");
 
             var d2 = $($.map(toshow, function (el) { return el.get(); }));
-            d2.removeClass("donotshow");
+            d2.addClass("v");
             //$.each(tohide, function (i,e) {
             //    e.addClass("donotshow");
             //});
             log.e('Search');
 
 
+            //insanely slow
+            //var tohide = [], toshow = [];
+            //log.s('Search');
+            //$.each($select, function (i,e) {
+             
+            //   // var $this = $(this);
+            //  //  var value = this.getAttribute("value");
+            // //   console.log(e.value);
+            //    if (e.value.toString().indexOf($SerchTerm) == -1 && !e.ischecked) {
 
+            //        tohide.push("li:eq("+i+")");
+            //        return;
+            //    } else {
+            //        return;
+            //    }
+
+            //    if (e.ischecked) {
+            //        toshow.push("li:eq(" + i + ")");
+            //    }
+            //});
+            //console.log(tohide);
+            ////var d = $($.map(tohide, function(el){return $.makeArray(el)}));
+            ////var d = $($.map(tohide, function (el) { return el.get(); }));
+            //var d = $(tohide.join(","), $ul);
+            //console.log(d.length);
+            //d.addClass("donotshow");
+
+            //473
+            //log.s('Search');
+            //$ul.find("li" + direc).map(function (index, value) {
+            //    $(value).toggle($(value).text().toLowerCase().indexOf($SerchTerm) >= 0);
+            //});
+            //log.e('Search');
+
+            //342
+            //var lis = $ul.find("li" + direc);
+            //var list = $.makeArray($select.map(function (k, v) {
+            //    return k.value.toString().toLowerCase();
+            //}));
+            //log.s('Search');
+            //lis.each(function (index, value) {
+            //    $(value).toggle(list[index].indexOf($SerchTerm) >= 0);
+            //});
+            //log.e('Search');
+
+            //369 initially
+            //var lis = $ul.find("li" + direc);
+            //var list = $.makeArray($select.map(function (k, v) {
+            //    return k.value.toString().toLowerCase();
+            //}));
+            //var tohide = [];
+            //log.s('Search');
+            //lis.each(function (index, value) {
+            //    if (list[index].indexOf($SerchTerm) < 0) tohide.push($(value));
+            //});
+            //var d = $($.map(tohide, function(el){return el.get();}));
+            //d.addClass("donotshow");
+            //log.e('Search');
 
             //434
             //performs as expected down and up though
@@ -224,6 +284,16 @@ $(document).ready(function () {
             //log.s('Search');
             ////^= starts with
             ////*= contains
+            //$ul.find("li:not(.donotshow):not([value*='" + $SerchTerm + "'])").addClass("donotshow");
+            //log.e('Search');
+
+
+            //pure jquery
+            //353
+            //log.s('Search');
+            //////^= starts with
+            //////*= contains
+            //$ul.find("li.donotshow[value*='" + $SerchTerm + "']").removeClass("donotshow");
             //$ul.find("li:not(.donotshow):not([value*='" + $SerchTerm + "'])").addClass("donotshow");
             //log.e('Search');
 
