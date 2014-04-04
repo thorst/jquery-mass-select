@@ -60,7 +60,7 @@ $(document).ready(function () {
     //Populate with some data
     log.s('Create data');
     var output = [];
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 1000; i++) {
         //output.push('<option value="' + i + '"> Value #' + i + '</option>');
         output.push({name:'Value #' + i,value:i, type:"option", isoption: true, ischecked:false});
     };
@@ -158,32 +158,35 @@ $(document).ready(function () {
             //116 in chrome
             //best so far
             //reverse it sub 100
-            var tohide = [], toshow=[];
-            log.s('Search');
-            $ul.find("li" + direc).each(function (i, e) {
-                var $this = $(this);
-                var value = this.getAttribute("value");
+           // var tohide = [], toshow=[];
+           // log.s('Search');
+           // $ul.find("li" + direc).each(function (i, e) {
+           //     var $this = $(this);
+           //     var value = this.getAttribute("value");
        
-                if (value.indexOf($SerchTerm) == -1) {
+           //     if (value.indexOf($SerchTerm) == -1) {
           
-                    tohide.push($this);
-                    return;
-                }
+           //         tohide.push($this);
+           //         return;
+           //     }
 
-                if (!$this.hasClass("v")) {
-                    toshow.push($this);
-                }
-            });
-            //var d = $($.map(tohide, function(el){return $.makeArray(el)}));
-            var d = $($.map(tohide, function(el){return el.get();}));
-            d.removeClass("v");
+           //     if (!$this.hasClass("v")) {
+           //         toshow.push($this);
+           //     }
+           // });
+           // //var d = $($.map(tohide, function(el){return $.makeArray(el)}));
+           // var d = $($.map(tohide, function(el){return el.get();}));
+           //d.removeClass("v");
+           // // d.css('margin-top', '-1000px');
 
-            var d2 = $($.map(toshow, function (el) { return el.get(); }));
-            d2.addClass("v");
-            //$.each(tohide, function (i,e) {
-            //    e.addClass("donotshow");
-            //});
-            log.e('Search');
+           // var d2 = $($.map(toshow, function (el) { return el.get(); }));
+           // d2.addClass("v");
+           //// d2.css('margin-top', '0px');
+
+           // //$.each(tohide, function (i,e) {
+           // //    e.addClass("donotshow");
+           // //});
+           // log.e('Search');
 
 
             //insanely slow
@@ -287,6 +290,34 @@ $(document).ready(function () {
             //$ul.find("li:not(.donotshow):not([value*='" + $SerchTerm + "'])").addClass("donotshow");
             //log.e('Search');
 
+            //This fully works and is about 355ms
+            //pure jquery
+            //log.s('Search');
+            ////^= starts with
+            ////*= contains
+            //$ul.find("li.v:not([value*='" + $SerchTerm + "'])").removeClass("v");
+            //$ul.find("li:not(.v)[value*='" + $SerchTerm + "']").addClass("v");
+            //log.e('Search');
+
+
+            //This fully works and is about 337ms
+            //pure jquery
+            log.s('Search');
+            //^= starts with
+            //*= contains
+            if (direc == ".v") {
+                $ul.find("li.v:not([value*='" + $SerchTerm + "'])").removeClass("v");
+
+            } else if (direc == ":not(.v)") {
+                $ul.find("li:not(.v)[value*='" + $SerchTerm + "']").addClass("v");
+                
+            } else {
+                $ul.find("li.v:not([value*='" + $SerchTerm + "'])").removeClass("v");
+                $ul.find("li:not(.v)[value*='" + $SerchTerm + "']").addClass("v");
+            }
+            log.e('Search');
+
+            
 
             //pure jquery
             //353

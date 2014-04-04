@@ -11,3 +11,8 @@
 	- willshow
 	- willhide
 	- state changed
+
+The Best:
+
+http://harvesthq.github.io/chosen/ >> http://jsfiddle.net/thorst/KxqL4/ `
+http://davidstutz.github.io/bootstrap-multiselect/

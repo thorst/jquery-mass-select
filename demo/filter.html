@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        #multiselect-ul li {
+            /* color:#ccc;*/
+            /*display: none;*/
+            /*height:0;*/
+            /*position: fixed;
+            left: -100px;*/
+            margin-top: -1000px;
+        }
+
+            #multiselect-ul li.v {
+                /*display: block;*/
+                /*  color: #000;*/
+                /*height: 20px;*/
+                /*position: static;
+                left: 0;*/
+                margin-top: 0;
+            }
+
+        img {
+            display: block;
+            position: absolute;
+            right: 5px;
+            top: 33px;
+        }
+    </style>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <!-- Respond.js proxy on external server -->
+    <link href="//netdna.bootstrapcdn.com/respond-proxy.html" id="respond-proxy" rel="respond-proxy" />
+    <link href="respond.proxy.gif" id="respond-redirect" rel="respond-redirect" />
+    <script src="respond.proxy.js"></script>
+    <script>
+        if (!window.console) console = {};
+        if (!window.console.time) { console.time = function () { }; console.timeEnd = function () { }; }
+        $log = {
+            i: [],
+            s: function (title) {
+                console.time(title);
+                $log.i[title] = new Date().getTime();
+            },
+            e: function (title) {
+                var end = new Date().getTime();
+                console.timeEnd(title);
+                var time = end - $log.i[title];
+                $("#log").append(title + ': ' + time + "ms\r");
+                delete $log.i[title];
+            }
+        };
+
+        $p = {
+            select: [],
+            ul: null,
+            createObject: function (d) {
+                $log.s('Create data');
+                for (var i = 0; i < d; i++) {
+                    $p.select.push({ name: 'Value #' + i, value: i, type: "option", isoption: true, ischecked: false });
+                };
+                $log.e('Create data');
+            },
+            createOptions: function () {
+                $log.s('Create plugin');
+                //349
+                var lis = [];
+                $.each($p.select, function (index, element) {
+                    lis.push($p.createOptionValue(element));
+                });
+                $p.ul.append(lis.join(""));
+                //211
+                //var x = $.render.myTemplateName($select);
+                //$ul.append(x);
+                $log.e('Create plugin');
+            },
+            createOptionValue: function (e) {
+                return "<li value='" + e.value + "' text='" + e.name + "' class='v'><a href='#'>" + e.name + '</a></li>';
+            },
+            searchTerm: "",
+            //Search A is various version of jQuery selectors for filtering
+            //  ^= starts with  *= contains
+            searchA: {
+                type1: function (that) {
+                    //80ms
+                    $log.s('Search');
+                    var nL = that.value.length,
+                        oL = $p.searchTerm.length;
+                    $p.searchTerm = that.value;
+                    if ($p.searchTerm.length == 0) {
+                        $p.ul.find("li:not(.v)").addClass("v");
+                    } else if (nL > oL) {
+                        $p.ul.find("li.v:not([value*='" + $p.searchTerm + "'])").removeClass("v");
+                    } else if (nL < oL) {
+                        $p.ul.find("li:not(.v)[value*='" + $p.searchTerm + "']").addClass("v");
+                    } else {
+                        $p.ul.find("li.v:not([value*='" + $p.searchTerm + "'])").removeClass("v");
+                        $p.ul.find("li:not(.v)[value*='" + $p.searchTerm + "']").addClass("v");
+                    }
+                    $log.e('Search');
+                },
+                type2: function (that) {
+                    //80ms
+                    $log.s('Search');
+                    var nL = that.value.length,
+                        oL = $p.searchTerm.length;
+                    $p.searchTerm = that.value;
+                    if ($p.searchTerm.length == 0) {
+                        $p.ul.find("li:not(.v)").addClass("v");
+                    } else if (nL > oL) {
+                        $p.ul.find("li.v:not([value*='" + $p.searchTerm + "'])").css("display", "none");
+                    } else if (nL < oL) {
+                        $p.ul.find("li:not(.v)[value*='" + $p.searchTerm + "']").css("display", "");
+                    } else {
+                        $p.ul.find("li.v:not([value*='" + $p.searchTerm + "'])").css("display", "none");
+                        $p.ul.find("li:not(.v)[value*='" + $p.searchTerm + "']").css("display", "");
+                    }
+                    $log.e('Search');
+                }
+            },
+            //Search B modifies each item directly
+            searchB: {
+                type1: function (that) {
+                    //150ms
+                    $log.s('Search');
+                    var nL = that.value.length,
+                        oL = $p.searchTerm.length;
+                    $p.searchTerm = that.value;
+                    var direc = "";
+                    if ($p.searchTerm.length == 0) {
+                        $p.ul.find("li:not(.v)").addClass("v");
+                    } else if (nL > oL) {
+                        $p.ul.find("li.v").each(function (i, e) {
+                            var $this = $(this);
+                            var value = this.getAttribute("value");
+                            if (value.indexOf($p.searchTerm) === -1) {
+                                $this.removeClass("v");
+                            }
+                        });
+                    } else if (nL < oL) {
+                        $p.ul.find("li:not(.v)" + direc).each(function (i, e) {
+                            var $this = $(this);
+                            var value = this.getAttribute("value");
+                            if (value.indexOf($p.searchTerm) !== -1) {
+                                $this.addClass("v");
+                            }
+                        });
+                    } else {
+                        $p.ul.find("li").each(function (i, e) {
+                            var $this = $(this);
+                            var value = this.getAttribute("value");
+                            if (value.indexOf($p.searchTerm) == -1) {
+                                $this.removeClass("v");
+                                this.className = this.className + " donotshow";
+                            } else {
+                                $this.addClass("v");
+                                this.className = this.className.replace(" donotshow", "");
+                            }
+                        });
+                    }
+                    $log.e('Search');
+                },
+                //Search C modifies array of jQuery objects
+                searchC: {
+                    type1: function (that) {
+                    }
+                }
+            }
+        };
+        $(document).ready(function () {
+            $p.ul = $("#multiselect-ul");
+            $p.createObject(10000);
+            $p.createOptions();
+
+            $("#searchText").on("keyup", function () {
+                $p.searchA.type1(this);
+            });
+
+            $("#testBtn").click(function () {
+                $("#testCont ul").css("margin-top", $("#testCont ul").css("margin-top") == "-100000px" ? "0" : "-100000px")
+
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <div class="container" style="margin-top:20px;">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="inputSuccess2">Search List</label>
+                    <input type="text" class="form-control" id="searchText">
+                    <img id="searchIndicator" class="hide" src="/demo/ajax-loader.gif" alt="" />
+                </div>
+            </div>
+            <div class="col-xs-6">
+                Different combinations I'm testing
+                <ul>
+                    <li>Directly modifying each item V Modifying all with jquery selector V Modifying all with array jquery objects</li>
+                    <li>Hiding via class V via css V via .hide</li>
+                    <li>Template checkbox V just li's</li>
+                </ul>
+                <a href="#" id="testBtn">Test</a>
+                <div id="testCont" style="overflow: hidden; ">
+                    <ul>
+                        <li>Test</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <span class="help-block">You can search the list either by text or by value.</span>
+        <ul id="multiselect-ul" style="overflow: hidden; position: absolute;"></ul>
+
+
+
+        
+    </div>
+
+</body>
+</html>

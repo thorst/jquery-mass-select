@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        #multiselect-ul tr {
+             /*color:#ccc;*/
+            display: none;
+            /*height:0;*/
+            /*position: fixed;
+            left: -100px;*/
+            /*margin-top: -1000px;*/
+        }
+
+            #multiselect-ul tr.v {
+                display: block;
+                  /*color: #000;*/
+                /*height: 20px;*/
+                /*position: static;
+                left: 0;*/
+                /*margin-top: 0;*/
+            }
+
+        
+    </style>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <!-- Respond.js proxy on external server -->
+    <link href="//netdna.bootstrapcdn.com/respond-proxy.html" id="respond-proxy" rel="respond-proxy" />
+    <link href="respond.proxy.gif" id="respond-redirect" rel="respond-redirect" />
+    <script src="respond.proxy.js"></script>
+    <script>
+        if (!window.console) console = {};
+        if (!window.console.time) { console.time = function () { }; console.timeEnd = function () { }; }
+        $log = {
+            i: [],
+            s: function (title) {
+                console.time(title);
+                $log.i[title] = new Date().getTime();
+            },
+            e: function (title) {
+                var end = new Date().getTime();
+                console.timeEnd(title);
+                var time = end - $log.i[title];
+                $("#log").append(title + ': ' + time + "ms\r");
+                delete $log.i[title];
+            }
+        };
+
+        $p = {
+            select: [],
+            ul: null,
+            render: 1000,
+            i:0,
+            showing:0,
+            createObject: function (d) {
+                $log.s('Create data');
+                for (var i = 0; i < d; i++) {
+                    $p.select.push({ name: 'Value #' + i, value: i.toString(), type: "option", isoption: true, ischecked: false, isvisible:true });
+                };
+                $log.e('Create data');
+            },
+            createOptions: function () {
+                $log.s('Render plugin');
+                //21
+                var lis = [], total = $p.i + $p.render;
+
+                while (lis.length<$p.render)
+                {
+                    //abort if we've gone to far
+                    if ($p.i > $p.select.length - 1) {
+                        break;
+                    }
+                    var e = $p.select[$p.i];
+                    if (e.isvisible) {
+                        lis.push($p.createOptionValue(e));
+                    }
+                    
+                    $p.i++
+                }
+                $p.i = total;
+                $p.showing=lis.length;
+                $p.ul.html(lis.join(""));
+                $log.e('Render plugin');
+            },
+            createOptionValue: function (e) {
+                return "<tr value='" + e.value + "' text='" + e.name + "' class='v'><td>" + e.name + '</td></tr>';
+            },
+            togglePaging: function () {
+                $("#next").toggleClass("disabled", $p.i > $p.select.length || $p.showing < $p.render);
+                $("#prev").toggleClass("disabled", $p.i ==$p.render);
+            },
+            searchTerm: "",
+            //Search A is various version of jQuery selectors for filtering
+            //  ^= starts with  *= contains
+            searchA: {
+                type1a: function () {
+                    $log.s('Search');
+                    
+                    for (var i = 0; i < $p.select.length; i++) {
+                        var e = $p.select[i],
+                            match = e.value.indexOf($p.searchTerm) == -1;
+                        if (e.isvisible && match) {
+                            e.isvisible = false;
+                            continue;
+                        } else if (!e.isvisible && !match) {
+                            e.isvisible = true;
+                            continue;
+                        }
+                    }
+                    $log.e('Search');
+                },
+                type1: function (that) {
+                   
+                    $p.searchTerm = that.value;
+                    $p.i = 0;
+                    $p.searchA.type1a();
+                    $p.createOptions();
+                   
+                }
+               
+               
+            }
+           
+        };
+        $(document).ready(function () {
+            $p.ul = $("#multiselect-ul");
+            $p.createObject(9085);
+            $p.createOptions();
+
+            $("#searchText").on("keyup", function () {
+                $p.searchA.type1(this);
+                $p.togglePaging();
+            });
+
+            $("#testBtn").click(function () {
+                $("#testCont ul").css("margin-top", $("#testCont ul").css("margin-top") == "-100000px" ? "0" : "-100000px")
+            });
+
+            $("#next").click(function () {
+                $p.createOptions();
+                $p.togglePaging();
+            });
+            $("#prev").click(function () {
+                $p.i -= ($p.render*2);
+                $p.createOptions();
+                $p.togglePaging();
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <div class="container" style="margin-top:20px;">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="inputSuccess2">Search List</label>
+                    <input type="text" class="form-control" id="searchText">
+                    <img id="searchIndicator" class="hide" src="/demo/ajax-loader.gif" alt="" />
+                </div>
+                <span class="help-block">You can search the list either by text or by value.</span>
+                <div class="btn-group">
+                    <a href="#" id="prev" class="btn btn-default disabled"><</a>
+                    <a href="#" id="checkAll" class="btn btn-default">Check all<br /><small>1-1000/10000</small></a>
+                    <a href="#" id="next" class="btn btn-default ">></a>
+                    </div>
+                </div>
+            <div class="col-xs-6">
+                Different combinations I'm testing
+                <ul>
+                    <li>Directly modifying each item V Modifying all with jquery selector V Modifying all with array jquery objects</li>
+                    <li>Hiding via class V via css V via .hide</li>
+                    <li>Template checkbox V just li's</li>
+                </ul>
+                <a href="#" id="testBtn">Test</a>
+                <div id="testCont" style="overflow: hidden; ">
+                    <ul>
+                        <li>Test</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <table id="multiselect-ul" style="overflow: hidden; position: absolute;table-layout:fixed"></table>
+
+
+
+
+    </div>
+
+</body>
+</html>
