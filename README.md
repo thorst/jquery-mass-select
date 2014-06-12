@@ -1,4 +1,4 @@
-(jquery-mass-select) [http://thorst.github.io/jquery-mass-select]
+[jquery-mass-select](http://thorst.github.io/jquery-mass-select)
 ==================
 
 A massively capable multiselect. Focusing on insanely large lists.
@@ -20,5 +20,5 @@ win7
   firefox
 
 Similar Great Libraries
-Chosen https://github.com/harvesthq/chosen
-Bootstrap select https://github.com/davidstutz/bootstrap-multiselect
+[Chosen](https://github.com/harvesthq/chosen)
+[Bootstrap select](https://github.com/davidstutz/bootstrap-multiselect)
